@@ -66,6 +66,10 @@
           }
           msg.textContent = `Bienvenido, ${json.user.nombre} (${json.user.rol})`;
           msg.className = 'msg ok';
+
+          // Navegar según el rol en la misma pestaña (compatible con WebView)
+          const target = json.user.rol === 'admin' ? '/admin.html' : '/usuario.html';
+          window.location.href = target;
         } catch (err) {
           msg.textContent = err.message || 'Error del servidor';
           msg.className = 'msg err';

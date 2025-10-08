@@ -1,3 +1,4 @@
+import Constants from 'expo-constants';
 import { Image } from 'expo-image';
 import * as Linking from 'expo-linking';
 import { useEffect } from 'react';
@@ -8,10 +9,28 @@ import ParallaxScrollView from '@/components/parallax-scroll-view';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 
+function getServerBaseUrl() {
+  // Web: localhost funciona
+  if (Platform.OS === 'web') return 'http://localhost:3000';
+
+  // Expo Go: obtener host del debugger (p.ej. "192.168.1.10:19000")
+  // SDK 54: prefer expoConfig.hostUri, fallback a expoGoConfig.debuggerHost
+  const hostUri = (Constants as any)?.expoConfig?.hostUri || (Constants as any)?.expoGoConfig?.debuggerHost;
+  let host = typeof hostUri === 'string' ? hostUri.split(':')[0] : 'localhost';
+
+  // Emulador Android: usar 10.0.2.2 si host apunta a localhost
+  if (Platform.OS === 'android' && (host === 'localhost' || host === '127.0.0.1')) {
+    host = '10.0.2.2';
+  }
+
+  return `http://${host}:3000`;
+}
+
 export default function HomeScreen() {
   useEffect(() => {
-    // Automatically redirect to login page when app starts
-    Linking.openURL('http://localhost:3000/login');
+    const base = getServerBaseUrl();
+    const loginUrl = `${base}/login`;
+    Linking.openURL(loginUrl);
   }, []);
 
   return (
@@ -30,7 +49,7 @@ export default function HomeScreen() {
       <ThemedView style={styles.stepContainer}>
         <ThemedText type="subtitle">Opening Login Page</ThemedText>
         <ThemedText>
-          You will be redirected to the login page at http://localhost:3000/login
+          You will be redirected to the login page.
         </ThemedText>
       </ThemedView>
       <ThemedView style={styles.stepContainer}>

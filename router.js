@@ -28,6 +28,19 @@ router.post("/login", async (req, res) => {
   }
 });
 
+// Lista de productos
+router.get("/productos", async (req, res) => {
+  try {
+    const [rows] = await db.execute(
+      "SELECT id_producto, nombre, descripcion, precio, stock FROM productos ORDER BY id_producto DESC"
+    );
+    return res.json({ ok: true, data: rows });
+  } catch (err) {
+    console.error("Error en /api/productos:", err);
+    return res.status(500).json({ ok: false, message: "Error del servidor" });
+  }
+});
+
 router.get("/", (req, res) => {
   res.send("Express funcionando");
 });
